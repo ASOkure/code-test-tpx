@@ -1,0 +1,15 @@
+# build stage
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# production stage
+FROM nginx:alpine
+COPY --from=build /app/build /usr/share/nginx/html
+# optional: copy custom nginx conf if you want to proxy /api to backend
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
