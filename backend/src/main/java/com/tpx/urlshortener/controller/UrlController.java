@@ -13,27 +13,23 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/urls")
 @RequiredArgsConstructor
 public class UrlController {
 
     private final UrlMappingService service;
 
 
-    @PostMapping("/shorten")
+    @PostMapping
     public ResponseEntity<UrlResponse> shortenUrl(@RequestBody UrlRequest request) {
         UrlMapping mapping = service.createShortUrl(request.getFullUrl(), request.getCustomAlias());
         UrlResponse response = UrlMappingMapper.toResponse(mapping);
-        return ResponseEntity.created(URI.create("/" + mapping.getAlias())).body(response);
+
+        return ResponseEntity
+                .created(URI.create(response.getShortUrl()))
+                .body(response);
     }
 
-
-    @GetMapping("/{alias}")
-    public ResponseEntity<Void> redirect(@PathVariable String alias) {
-        UrlMapping mapping = service.getByAlias(alias);
-        return ResponseEntity.status(302)
-                .location(URI.create(mapping.getFullUrl()))
-                .build();
-    }
 
 
     @DeleteMapping("/{alias}")
@@ -42,7 +38,7 @@ public class UrlController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/urls")
+    @GetMapping
     public List<UrlResponse> listAll() {
         return service.listAll().stream()
                 .map(UrlMappingMapper::toResponse)

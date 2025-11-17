@@ -5,6 +5,7 @@ import com.tpx.urlshortener.repository.UrlMappingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.util.UUID;
 
 @Service
@@ -13,8 +14,21 @@ public class UrlMappingService {
 
     private final UrlMappingRepository repository;
 
+    private void validateUrl(String url) {
+        try {
+            URI uri = new URI(url);
+            if (uri.getScheme() == null || (!uri.getScheme().equals("http") && !uri.getScheme().equals("https"))) {
+                throw new IllegalArgumentException("URL must start with http:// or https://");
+            }
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Invalid URL format");
+        }
+    }
+
 
     public UrlMapping createShortUrl(String fullUrl, String customAlias) {
+        validateUrl(fullUrl);
+
         String alias = (customAlias != null && !customAlias.isBlank())
                 ? customAlias
                 : UUID.randomUUID().toString().substring(0, 8);
@@ -30,6 +44,7 @@ public class UrlMappingService {
 
         return repository.save(mapping);
     }
+
 
 
     public UrlMapping getByAlias(String alias) {
