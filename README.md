@@ -39,3 +39,67 @@ It should:
   - How to build and run locally.
   - Example usage (frontend and API).
   - Any notes or assumptions.
+
+# URL Shortener
+
+## Overview
+A simple URL shortener with:
+
+- Java Spring Boot backend (REST API)
+- React frontend
+- PostgreSQL database
+- Dockerized for local development
+- Swagger/OpenAPI support
+
+## Running Locally
+
+### Prerequisites
+- Docker & Docker Compose
+
+### Start all services
+```bash
+docker-compose up --build
+
+Frontend: http://localhost:3000
+
+Backend API: http://localhost:8080/api/urls
+
+Swagger UI: http://localhost:8080/swagger-ui/index.html
+
+Environment
+
+Parent .env:
+
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=url_shortener
+
+Frontend .env:
+REACT_APP_BACKEND_URL=/api/urls
+
+Example Usage
+
+Enter a full URL in the frontend form
+
+Optionally provide a custom alias
+
+Click "Shorten"
+
+The URL appears in the table with its shortened link
+
+Click the shortened URL to navigate
+
+Tests
+Backend
+./mvnw test
+
+Frontend
+npm test
+
+Notes
+
+Backend persists URLs in Postgres
+
+Frontend uses CORS and proxies /api requests to backend
+
+Short URLs redirect to original URLs
